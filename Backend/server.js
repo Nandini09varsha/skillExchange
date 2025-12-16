@@ -4,6 +4,8 @@ import cors from "cors";
 import connectDB from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
+import skillRoutes from "./routes/skillRoutes.js";
+import { errorHandler } from "./middleware/errorMiddleware.js";
 
 dotenv.config();
 connectDB();
@@ -15,6 +17,8 @@ app.use(express.json());
 
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
+app.use("/api/skills", skillRoutes);
+app.use(errorHandler);
 
 app.get("/", (req, res) => {
   res.send("SkillSwap backend running");
