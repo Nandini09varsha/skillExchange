@@ -15,6 +15,19 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    skillsOffered: [{
+      name: String,
+      level: String
+    }],
+    skillsWanted: [{
+      name: String
+    }],
+    bio: String,
+    rating: {
+      type: Number,
+      default: 0
+    }
+    
   },
   { timestamps: true }
 );

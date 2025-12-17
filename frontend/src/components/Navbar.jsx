@@ -1,17 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "@/context/AuthContext";
 
 export default function Navbar() {
   const navigate = useNavigate();
+  const { user, isAuth, logout } = useAuth();
+
   const navItems = ["Home", "Skills", "Tutors", "Pricing", "About"];
-
-  const token = localStorage.getItem("token");
-  const user = JSON.parse(localStorage.getItem("user"));
-
-  const handleLogout = () => {
-    localStorage.clear();
-    navigate("/");
-  };
 
   return (
     <nav className="flex items-center justify-between px-10 py-6">
@@ -38,7 +33,7 @@ export default function Navbar() {
 
       {/* Right Section */}
       <div className="flex items-center gap-4">
-        {!token ? (
+        {!isAuth ? (
           <>
             <Link to="/login">
               <Button
@@ -88,7 +83,7 @@ export default function Navbar() {
 
             {/* Logout */}
             <Button
-              onClick={handleLogout}
+              onClick={logout}
               className="
                 bg-red-500/80
                 hover:bg-red-600
