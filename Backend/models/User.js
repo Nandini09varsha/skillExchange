@@ -28,6 +28,19 @@ const userSchema = new mongoose.Schema(
       enum: ["user", "tutor", "admin"],
       default: "user",
     },
+    skillsOffered: [{
+      name: String,
+      level: String
+    }],
+    skillsWanted: [{
+      name: String
+    }],
+    bio: String,
+    rating: {
+      type: Number,
+      default: 0
+    }
+    
   },
   { timestamps: true }
 );
