@@ -141,7 +141,7 @@
 // };
 
 // export default Login;
-
+import { useAuth } from "@/context/AuthContext";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
@@ -152,6 +152,7 @@ import { loginUser } from "@/services/auth";
 
 const Login = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [form, setForm] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -170,8 +171,7 @@ const Login = () => {
       setLoading(true);
       const data = await loginUser(form);
 
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user));
+      login(data.token, data.user);
 
       navigate("/");
     } catch (err) {
