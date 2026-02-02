@@ -2,7 +2,11 @@ import { useEffect, useState } from "react";
 import API from "@/services/auth";
 
 export default function MatchPage() {
-  const [matches, setMatches] = useState(null);
+  const [matches, setMatches] = useState({
+    mutualMatches: [],
+    recommendedForMe: [],
+    iCanHelp: [],
+  });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -11,8 +15,24 @@ export default function MatchPage() {
 
   const fetchMatches = async () => {
     try {
-      const res = await API.get("/match");
-      setMatches(res.data);
+      // ✅ Correct backend endpoint
+      const res = await API.get("/match/suggestions");
+
+      /**
+       * Backend currently returns:
+       * {
+       *   count: number,
+       *   matches: []
+       * }
+       *
+       * For now, we map everything into "recommendedForMe".
+       * Later you can enhance backend to return match types.
+       */
+      setMatches({
+        mutualMatches: [],
+        recommendedForMe: res.data.matches || [],
+        iCanHelp: [],
+      });
     } catch (err) {
       console.error("Match fetch error:", err);
     } finally {
@@ -43,39 +63,38 @@ export default function MatchPage() {
             >
               <h3 className="text-xl font-medium mb-2">{user.name}</h3>
 
+              {/* Optional reason */}
               {user.reason && (
                 <p className="text-sm text-purple-400 mb-3">
                   {user.reason}
                 </p>
               )}
 
+              {/* Matched skills */}
               {user.matchedOn && (
                 <div className="mb-3">
                   <p className="text-sm text-gray-400 mb-1">
                     Matched on:
                   </p>
                   <div className="flex gap-2 flex-wrap">
-                    {Array.isArray(user.matchedOn)
-                      ? user.matchedOn.map((skill, idx) => (
-                          <span
-                            key={idx}
-                            className="px-3 py-1 text-sm bg-purple-500/20 rounded-full"
-                          >
-                            {skill}
-                          </span>
-                        ))
-                      : null}
+                    {user.matchedOn.map((skill, idx) => (
+                      <span
+                        key={idx}
+                        className="px-3 py-1 text-sm bg-purple-500/20 rounded-full"
+                      >
+                        {skill}
+                      </span>
+                    ))}
                   </div>
                 </div>
               )}
 
-              {user.matchedOn?.youWantTheyOffer && (
+              {/* You want */}
+              {user.youWantTheyOffer && (
                 <div className="mb-2">
-                  <p className="text-sm text-gray-400">
-                    You want:
-                  </p>
+                  <p className="text-sm text-gray-400">You want:</p>
                   <div className="flex gap-2 flex-wrap">
-                    {user.matchedOn.youWantTheyOffer.map((s, i) => (
+                    {user.youWantTheyOffer.map((s, i) => (
                       <span
                         key={i}
                         className="px-3 py-1 bg-green-500/20 rounded-full text-sm"
@@ -87,13 +106,12 @@ export default function MatchPage() {
                 </div>
               )}
 
-              {user.matchedOn?.theyWantYouOffer && (
+              {/* They want */}
+              {user.theyWantYouOffer && (
                 <div>
-                  <p className="text-sm text-gray-400">
-                    They want:
-                  </p>
+                  <p className="text-sm text-gray-400">They want:</p>
                   <div className="flex gap-2 flex-wrap">
-                    {user.matchedOn.theyWantYouOffer.map((s, i) => (
+                    {user.theyWantYouOffer.map((s, i) => (
                       <span
                         key={i}
                         className="px-3 py-1 bg-blue-500/20 rounded-full text-sm"
@@ -127,7 +145,7 @@ export default function MatchPage() {
         <Section
           title="🎯 Recommended For You"
           data={matches.recommendedForMe}
-          emptyText="No recommendations yet."
+          emptyText="No recommendations yet. Try updating your profile skills."
         />
 
         <Section
