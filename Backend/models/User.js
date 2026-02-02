@@ -12,35 +12,79 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
       unique: true,
-      lowercase: true,
-      trim: true,
     },
 
     password: {
       type: String,
       required: true,
-      minlength: 6,
     },
 
-    // ROLE
-    role: {
+    collegeName: {
       type: String,
-      enum: ["user", "tutor", "admin"],
-      default: "user",
+      required: true,
     },
-    skillsOffered: [{
-      name: String,
-      level: String
-    }],
-    skillsWanted: [{
-      name: String
-    }],
-    bio: String,
-    rating: {
+
+    year: {
+      type: String,
+      enum: ["1st", "2nd", "3rd", "4th"],
+      required: true,
+    },
+
+    branch: {
+      type: String,
+      required: true,
+    },
+
+    bio: {
+      type: String,
+      maxlength: 150,
+    },
+
+    // CORE MATCHING DATA
+    skillsHave: [
+      {
+        type: String,
+      },
+    ],
+
+    skillsWant: [
+      {
+        type: String,
+      },
+    ],
+
+    skillLevel: {
+      type: String,
+      enum: ["Beginner", "Intermediate", "Advanced"],
+      default: "Beginner",
+    },
+
+    availability: {
+      type: String,
+      enum: ["Weekdays", "Weekends", "Evenings"],
+    },
+
+    preferredMode: {
+      type: String,
+      enum: ["Chat", "Call", "VC"],
+      default: "Chat",
+    },
+
+    // CREDIT SYSTEM
+    credits: {
       type: Number,
-      default: 0
-    }
-    
+      default: 10, // starting credits
+    },
+
+    sessionsTaught: {
+      type: Number,
+      default: 0,
+    },
+
+    sessionsLearned: {
+      type: Number,
+      default: 0,
+    },
   },
   { timestamps: true }
 );

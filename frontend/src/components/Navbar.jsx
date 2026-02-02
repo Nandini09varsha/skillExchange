@@ -6,7 +6,12 @@ export default function Navbar() {
   const navigate = useNavigate();
   const { user, isAuth, logout } = useAuth();
 
-  const navItems = ["Home", "Skills", "Tutors", "Pricing", "About"];
+  // ✅ Nav items with routes
+  const navItems = [
+    { label: "Home", path: "/" },
+    { label: "Matches", path: "/matches" },
+    { label: "About", path: "/about" },
+  ];
 
   return (
     <nav className="flex items-center justify-between px-10 py-6">
@@ -20,14 +25,15 @@ export default function Navbar() {
       {/* Center Nav */}
       <div className="hidden md:flex items-center gap-1 px-4 py-2.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20">
         {navItems.map((item) => (
-          <span
-            key={item}
+          <Link
+            key={item.label}
+            to={item.path}
             className="px-7 py-3 text-[18px] font-medium text-gray-300 rounded-full
                        cursor-pointer transition-all duration-300
                        hover:text-white hover:bg-purple-500/30"
           >
-            {item}
-          </span>
+            {item.label}
+          </Link>
         ))}
       </div>
 
@@ -70,7 +76,7 @@ export default function Navbar() {
                 transition
               "
             >
-              {/* Avatar Circle */}
+              {/* Avatar */}
               <div className="w-10 h-10 rounded-full bg-purple-500 flex items-center justify-center text-white font-semibold">
                 {user?.name?.charAt(0).toUpperCase()}
               </div>

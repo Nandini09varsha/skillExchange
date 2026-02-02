@@ -1,9 +1,9 @@
 import express from "express";
 import { protect } from "../middleware/authMiddleware.js";
-import { getMatches } from "../controllers/matchController.js";
+import { getMatchSuggestions } from "../controllers/matchController.js";
 
 const router = express.Router();
 
-router.get("/", protect, getMatches);
+router.get("/suggestions", protect, getMatchSuggestions);
 
 export default router;

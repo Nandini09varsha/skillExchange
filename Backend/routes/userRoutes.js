@@ -7,7 +7,10 @@ import {
 
 const router = express.Router();
 
+// Get logged-in user profile
 router.get("/me", protect, getMyProfile);
-router.put("/me", protect, updateMyProfile);
+
+// Update profile details
+router.put("/profile", protect, updateMyProfile);
 
 export default router;
