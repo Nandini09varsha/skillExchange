@@ -9,12 +9,10 @@ import skillRoutes from "./routes/skillRoutes.js";
 import matchRoutes from "./routes/matchRoutes.js";
 
 import { errorHandler } from "./middleware/errorMiddleware.js";
-  
 
 dotenv.config();
 
 const app = express();
-
 
 app.use(cors());
 app.use(express.json());
@@ -37,7 +35,6 @@ app.listen(PORT, "127.0.0.1", () => {
 });
 
 connectDB();
-
 
 // import express from "express";
 // import dotenv from "dotenv";
