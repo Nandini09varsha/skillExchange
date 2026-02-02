@@ -1,84 +1,62 @@
 import User from "../models/User.js";
 
-/**
- * GET /api/match
- * Returns mutual matches, recommended matches, and users I can help
- */
-export const getMatches = async (req, res) => {
+export const getMatchSuggestions = async (req, res) => {
   try {
-    const me = req.user;
+    const currentUser = req.user;
 
-    // Normalize my skills
-    const myWanted = me.skillsWanted?.map((s) => s.name.toLowerCase()) || [];
-    const myOffered = me.skillsOffered?.map((s) => s.name.toLowerCase()) || [];
+    // Safety check (should not happen, but good practice)
+    if (
+      !currentUser.skillsHave.length ||
+      !currentUser.skillsWant.length
+    ) {
+      return res.status(400).json({
+        message: "Complete your profile to see matches",
+      });
+    }
 
-    // Get all other users
-    const users = await User.find({ _id: { $ne: me._id } }).select(
-      "-password"
+    // Find other users (exclude self)
+    const users = await User.find({
+      _id: { $ne: currentUser._id },
+      skillsHave: { $exists: true, $ne: [] },
+      skillsWant: { $exists: true, $ne: [] },
+    }).select(
+      "name collegeName year branch skillsHave skillsWant availability preferredMode"
     );
 
-    const mutualMatches = [];
-    const recommendedForMe = [];
-    const iCanHelp = [];
+    const matches = [];
 
-    users.forEach((user) => {
-      const userWanted =
-        user.skillsWanted?.map((s) => s.name.toLowerCase()) || [];
-      const userOffered =
-        user.skillsOffered?.map((s) => s.name.toLowerCase()) || [];
-
-      // Intersections
-      const wantedMatch = myWanted.filter((skill) =>
-        userOffered.includes(skill)
+    for (let user of users) {
+      const iWantTheyHave = currentUser.skillsWant.filter(skill =>
+        user.skillsHave.includes(skill)
       );
 
-      const offeredMatch = myOffered.filter((skill) =>
-        userWanted.includes(skill)
+      const theyWantIHave = user.skillsWant.filter(skill =>
+        currentUser.skillsHave.includes(skill)
       );
 
-      // Mutual match
-      if (wantedMatch.length > 0 && offeredMatch.length > 0) {
-        mutualMatches.push({
-          _id: user._id,
+      if (iWantTheyHave.length && theyWantIHave.length) {
+        matches.push({
+          userId: user._id,
           name: user.name,
-          skillsOffered: user.skillsOffered,
-          skillsWanted: user.skillsWanted,
-          matchedOn: {
-            youWantTheyOffer: wantedMatch,
-            theyWantYouOffer: offeredMatch,
+          collegeName: user.collegeName,
+          year: user.year,
+          branch: user.branch,
+          matchedSkills: {
+            iLearn: iWantTheyHave,
+            iTeach: theyWantIHave,
           },
-          reason: "Mutual skill exchange",
+          availability: user.availability,
+          preferredMode: user.preferredMode,
         });
       }
-      // Recommended for me
-      else if (wantedMatch.length > 0) {
-        recommendedForMe.push({
-          _id: user._id,
-          name: user.name,
-          skillsOffered: user.skillsOffered,
-          matchedOn: wantedMatch,
-          reason: "They offer skills you want",
-        });
-      }
-      // I can help
-      else if (offeredMatch.length > 0) {
-        iCanHelp.push({
-          _id: user._id,
-          name: user.name,
-          skillsWanted: user.skillsWanted,
-          matchedOn: offeredMatch,
-          reason: "They want skills you offer",
-        });
-      }
-    });
+    }
 
     res.status(200).json({
-      mutualMatches,
-      recommendedForMe,
-      iCanHelp,
+      count: matches.length,
+      matches,
     });
   } catch (error) {
-    console.error("Match error:", error);
-    res.status(500).json({ message: "Failed to get matches" });
+    console.error("Match error:", error.message);
+    res.status(500).json({ message: "Failed to fetch matches" });
   }
 };
