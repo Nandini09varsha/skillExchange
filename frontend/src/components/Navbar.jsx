@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
+import { Search } from "lucide-react";
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -62,6 +63,20 @@ export default function Navbar() {
           </>
         ) : (
           <>
+          {/* 🔍 Search Icon (Outside Account Pill) */}
+            <button
+              onClick={() => navigate("/search")}
+              className="
+                p-3
+                rounded-full
+                bg-white/10
+                border border-white/20
+                hover:bg-purple-500/30
+                transition
+              "
+            >
+              <Search size={18} className="text-white" />
+            </button>
             {/* Avatar + Name */}
             <div
               onClick={() => navigate("/profile")}

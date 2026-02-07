@@ -5,6 +5,7 @@ import Register from "./pages/Register";
 import { useAuth } from "./context/AuthContext";
 import MatchPage from "./pages/MatchPage";
 import ProfileLayout from "@/pages/Profile/ProfileLayout";
+import Search from "./pages/Search";
 
 export default function App() {
   const { isAuth } = useAuth();
@@ -32,6 +33,7 @@ export default function App() {
           path="/matches"
           element={isAuth ? <MatchPage /> : <Navigate to="/login" />}
         />
+        <Route path="/search" element={<Search />}></Route>
       </Routes>
     </BrowserRouter>
   );

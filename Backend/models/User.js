@@ -41,13 +41,13 @@ const userSchema = new mongoose.Schema(
     },
 
     // CORE MATCHING DATA
-    skillsHave: [
+    skillsOffered: [
       {
         type: String,
       },
     ],
 
-    skillsWant: [
+    skillsWanted: [
       {
         type: String,
       },
@@ -85,8 +85,37 @@ const userSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    // REVIEW SYSTEM
+    reviews: [
+      {
+        userId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+        },
+        rating: {
+          type: Number,
+          min: 1,
+          max: 5,
+        },
+        comment: {
+          type: String,
+          maxlength: 300,
+        },
+      },
+    ],
   },
-  { timestamps: true }
+
+  { timestamps: true },
 );
+
+userSchema.virtual("avgRating").get(function () {
+  if (!this.reviews || this.reviews.length === 0) return 0;
+
+  const total = this.reviews.reduce((sum, review) => sum + review.rating, 0);
+  return (total / this.reviews.length).toFixed(1);
+});
+
+userSchema.set("toJSON", { virtuals: true });
+
 
 export default mongoose.model("User", userSchema);
