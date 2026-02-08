@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Link, useNavigate } from "react-router-dom";
+import { NavLink, Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 
 export default function Navbar() {
@@ -10,6 +10,7 @@ export default function Navbar() {
   const navItems = [
     { label: "Home", path: "/" },
     { label: "Matches", path: "/matches" },
+    { label: "Requests", path: "/requests" },
     { label: "About", path: "/about" },
   ];
 
@@ -17,23 +18,28 @@ export default function Navbar() {
     <nav className="flex items-center justify-between px-10 py-6">
       {/* Logo */}
       <Link to="/">
-        <h1 className="text-3xl font-semibold tracking-wide cursor-pointer">
+        <h1 className="text-3xl font-semibold tracking-wide cursor-pointer text-white">
           SkillSwap
         </h1>
       </Link>
 
-      {/* Center Nav */}
-      <div className="hidden md:flex items-center gap-1 px-4 py-2.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20">
+      {/* Center Navigation */}
+      <div className="hidden md:flex items-center gap-1 px-3 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20">
         {navItems.map((item) => (
-          <Link
+          <NavLink
             key={item.label}
             to={item.path}
-            className="px-7 py-3 text-[18px] font-medium text-gray-300 rounded-full
-                       cursor-pointer transition-all duration-300
-                       hover:text-white hover:bg-purple-500/30"
+            className={({ isActive }) =>
+              `px-6 py-3 text-[16px] font-medium rounded-full transition-all duration-300
+               ${
+                 isActive
+                   ? "bg-purple-500/40 text-white"
+                   : "text-gray-300 hover:text-white hover:bg-purple-500/30"
+               }`
+            }
           >
             {item.label}
-          </Link>
+          </NavLink>
         ))}
       </div>
 
@@ -44,7 +50,7 @@ export default function Navbar() {
             <Link to="/login">
               <Button
                 variant="outline"
-                className="border-white/20 text-white px-9 py-6 text-[18px]
+                className="border-white/20 text-white px-8 py-5 text-[16px]
                            hover:bg-white/10 rounded-full"
               >
                 Sign In
@@ -53,8 +59,8 @@ export default function Navbar() {
 
             <Link to="/register">
               <Button
-                className="bg-purple-400 hover:bg-purple-950
-                           px-9 py-6 text-[15px] rounded-full"
+                className="bg-purple-500 hover:bg-purple-600
+                           px-8 py-5 text-[15px] rounded-full"
               >
                 Create Account
               </Button>
@@ -62,7 +68,7 @@ export default function Navbar() {
           </>
         ) : (
           <>
-            {/* Avatar + Name */}
+            {/* Profile */}
             <div
               onClick={() => navigate("/profile")}
               className="
@@ -78,11 +84,11 @@ export default function Navbar() {
             >
               {/* Avatar */}
               <div className="w-10 h-10 rounded-full bg-purple-500 flex items-center justify-center text-white font-semibold">
-                {user?.name?.charAt(0).toUpperCase()}
+                {user?.name?.charAt(0)?.toUpperCase()}
               </div>
 
               {/* Name */}
-              <span className="text-white text-[16px] font-medium">
+              <span className="text-white text-[15px] font-medium">
                 {user?.name}
               </span>
             </div>

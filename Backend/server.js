@@ -56,6 +56,7 @@ import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import skillRoutes from "./routes/skillRoutes.js";
 import matchRoutes from "./routes/matchRoutes.js";
+import matchRequestRoutes from "./routes/matchRequestRoutes.js"; // ✅ NEW
 
 import { errorHandler } from "./middleware/errorMiddleware.js";
 
@@ -71,6 +72,8 @@ app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/skill", skillRoutes);
 app.use("/api/match", matchRoutes);
+app.use("/api/match-request", matchRequestRoutes); // ✅ NEW
+
 
 app.get("/", (req, res) => {
   res.send("SkillSwap backend running");
@@ -89,4 +92,3 @@ const startServer = async () => {
 };
 
 startServer();
-
