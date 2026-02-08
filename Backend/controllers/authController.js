@@ -15,26 +15,12 @@ const generateToken = (id) => {
 /* ================= REGISTER ================= */
 export const register = async (req, res) => {
   try {
-    const {
-      name,
-      email,
-      password,
-      collegeName,
-      year,
-      branch,
-    } = req.body;
+    const { name, email, password } = req.body;
 
-    // 🔒 Validate required fields
-    if (
-      !name ||
-      !email ||
-      !password ||
-      !collegeName ||
-      !year ||
-      !branch
-    ) {
+    // Validate required fields
+    if (!name || !email || !password) {
       return res.status(400).json({
-        message: "All fields are required",
+        message: "Name, email and password are required",
       });
     }
 
@@ -49,14 +35,11 @@ export const register = async (req, res) => {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create user (MATCHES SCHEMA)
+    // Create user (ONLY required fields)
     const user = await User.create({
       name,
       email,
       password: hashedPassword,
-      collegeName,
-      year,
-      branch,
     });
 
     // Respond with JWT
@@ -67,9 +50,6 @@ export const register = async (req, res) => {
         id: user._id,
         name: user.name,
         email: user.email,
-        collegeName: user.collegeName,
-        year: user.year,
-        branch: user.branch,
       },
     });
   } catch (err) {
@@ -83,14 +63,12 @@ export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Validate input
     if (!email || !password) {
       return res.status(400).json({
         message: "Email and password are required",
       });
     }
 
-    // Check user
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(400).json({
@@ -98,7 +76,6 @@ export const login = async (req, res) => {
       });
     }
 
-    // Compare password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(400).json({
@@ -106,7 +83,6 @@ export const login = async (req, res) => {
       });
     }
 
-    // Generate token
     const token = generateToken(user._id);
 
     res.status(200).json({
@@ -116,9 +92,6 @@ export const login = async (req, res) => {
         id: user._id,
         name: user.name,
         email: user.email,
-        collegeName: user.collegeName,
-        year: user.year,
-        branch: user.branch,
       },
     });
   } catch (err) {
