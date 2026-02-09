@@ -21,18 +21,14 @@ const userSchema = new mongoose.Schema(
 
     collegeName: {
       type: String,
-      required: true,
     },
 
     year: {
       type: String,
-      enum: ["1st", "2nd", "3rd", "4th"],
-      required: true,
     },
 
     branch: {
       type: String,
-      required: true,
     },
 
     bio: {
@@ -116,6 +112,5 @@ userSchema.virtual("avgRating").get(function () {
 });
 
 userSchema.set("toJSON", { virtuals: true });
-
 
 export default mongoose.model("User", userSchema);
