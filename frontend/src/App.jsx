@@ -7,6 +7,8 @@ import MatchPage from "./pages/MatchPage";
 import ProfileLayout from "@/pages/Profile/ProfileLayout";
 import IncomingRequests from "./pages/IncomingRequests";
 import Search from "./pages/Search";
+import Chat from "./pages/Chat";
+import Chats from "./pages/Chats";
 
 export default function App() {
   const { isAuth } = useAuth();
@@ -48,6 +50,8 @@ export default function App() {
           path="/search"
           element={isAuth ? <Search /> : <Navigate to="/login" />}
         />
+        <Route path="/chat/:userId" element={<Chat />} />
+        <Route path="/chats" element={<Chats />} />
       </Routes>
     </BrowserRouter>
   );

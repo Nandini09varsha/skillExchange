@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { NavLink, Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { Search } from "lucide-react";
+import { MessageCircle } from "lucide-react";
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -22,7 +23,6 @@ export default function Navbar() {
           SkillSwap
         </h1>
       </Link>
-
       {/* Center Navigation */}
       <div className="hidden md:flex items-center gap-1 px-3 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20">
         {navItems.map((item) => (
@@ -43,6 +43,21 @@ export default function Navbar() {
         ))}
       </div>
 
+      <button
+        onClick={() => navigate("/chats")}
+        className="flex items-center gap-2 px-3 py-2 rounded-full 
+             hover:bg-white/10 
+             hover:shadow-[0_0_10px_rgba(168,85,247,0.6)]
+             transition duration-200 cursor-pointer"
+      >
+        <MessageCircle
+          size={40}
+          className="text-white transition duration-200"
+        />
+        <span className="text-white text-m font-medium transition duration-200">
+          Messages
+        </span>
+      </button>
       {/* Right Section */}
       <div className="flex items-center gap-4">
         {!isAuth ? (

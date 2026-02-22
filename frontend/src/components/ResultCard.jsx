@@ -5,8 +5,10 @@ import {
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
+import { useNavigate } from "react-router-dom";
 
 export default function ResultCard({ user }) {
+  const navigate = useNavigate();
   return (
     <Card className="bg-white/10 backdrop-blur-md border-white/20 hover:scale-105 transition-all">
       <CardHeader>
@@ -79,7 +81,7 @@ export default function ResultCard({ user }) {
         <span>Sessions Taught: {user.sessionsTaught}</span>
 
         <button
-          onClick={() => console.log("Connect clicked for:", user._id)}
+          onClick={() => navigate(`/chat/${user._id}`)}
           className="px-4 py-2 bg-linear-to-r from-purple-600 to-pink-600 
             hover:scale-105 hover:shadow-lg 
             rounded-lg text-white text-sm transition-all duration-200"
