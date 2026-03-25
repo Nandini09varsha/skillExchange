@@ -9,6 +9,7 @@ import IncomingRequests from "./pages/IncomingRequests";
 import Search from "./pages/Search";
 import Chat from "./pages/Chat";
 import Chats from "./pages/Chats";
+import PublicProfile from "./pages/PublicProfile";
 
 export default function App() {
   const { isAuth } = useAuth();
@@ -50,6 +51,7 @@ export default function App() {
           path="/search"
           element={isAuth ? <Search /> : <Navigate to="/login" />}
         />
+        <Route path="/profile/:id" element={<PublicProfile />} />
         <Route path="/chat/:userId" element={<Chat />} />
         <Route path="/chats" element={<Chats />} />
       </Routes>

@@ -9,8 +9,13 @@ import { useNavigate } from "react-router-dom";
 
 export default function ResultCard({ user }) {
   const navigate = useNavigate();
+
   return (
-    <Card className="bg-white/10 backdrop-blur-md border-white/20 hover:scale-105 transition-all">
+    <Card
+      onClick={() => navigate(`/profile/${user._id}`)}
+      className="bg-white/10 backdrop-blur-md border-white/20 
+                 hover:scale-105 transition-all cursor-pointer"
+    >
       <CardHeader>
         <div className="flex items-center gap-4">
           <img
@@ -30,11 +35,11 @@ export default function ResultCard({ user }) {
             <div className="flex items-center gap-1 mt-1">
               {Array.from({ length: 5 }).map((_, i) => (
                 <span key={i} className="text-yellow-400 text-lg">
-                  {i < (user.rating || 0) ? "★" : "☆"}
+                  {i < (user.avgRating || 0) ? "★" : "☆"}
                 </span>
               ))}
               <span className="text-gray-400 text-sm ml-2">
-                ({user.rating || 0})
+                ({user.avgRating || 0})
               </span>
             </div>
           </div>
@@ -81,10 +86,13 @@ export default function ResultCard({ user }) {
         <span>Sessions Taught: {user.sessionsTaught}</span>
 
         <button
-          onClick={() => navigate(`/chat/${user._id}`)}
+          onClick={(e) => {
+            e.stopPropagation(); // 🚀 IMPORTANT
+            navigate(`/chat/${user._id}`);
+          }}
           className="px-4 py-2 bg-linear-to-r from-purple-600 to-pink-600 
-            hover:scale-105 hover:shadow-lg 
-            rounded-lg text-white text-sm transition-all duration-200"
+                     hover:scale-105 hover:shadow-lg 
+                     rounded-lg text-white text-sm transition-all duration-200"
         >
           Connect 💬
         </button>

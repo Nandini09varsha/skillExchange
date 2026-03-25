@@ -18,6 +18,8 @@ import { errorHandler } from "./middleware/errorMiddleware.js";
 import Message from "./models/Message.js";
 import Conversation from "./models/Conversation.js";
 import messageRoutes from "./routes/messageRoutes.js";
+import sessionRoutes from "./routes/sessionRoutes.js";
+import { protect } from "./middleware/authMiddleware.js";
 
 dotenv.config();
 
@@ -45,6 +47,7 @@ app.use("/api", searchRoutes);
 app.use("/api/conversation", conversationRoutes);
 app.use("/api/message", messageRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/sessions", sessionRoutes);
 
 app.get("/", (req, res) => {
   res.send("SkillSwap backend running");

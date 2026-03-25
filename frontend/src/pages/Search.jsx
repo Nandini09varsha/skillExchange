@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import ResultCard from "@/components/ResultCard";
+import { useNavigate } from "react-router-dom";
 
 export default function Search() {
   const [skill, setSkill] = useState("");
@@ -25,8 +26,10 @@ export default function Search() {
     }
   };
 
+  const navigate = useNavigate();
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black via-[#0a0f2c] to-[#2c0f3f] text-white p-10">
+    <div className="min-h-screen bg-linear-to-br from-black via-[#0a0f2c] to-[#2c0f3f] text-white p-10">
       {/* 🔍 SEARCH BAR */}
       <div className="max-w-2xl mx-auto">
         <h2 className="text-4xl font-bold mb-8 text-center">
