@@ -101,27 +101,40 @@ export const login = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
-<<<<<<< HEAD
+
+/* ================= FORGOT PASSWORD ================= */
 export const forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
 
-    const user = await User.findOne({ email });
-
-    if (!user) {
-      return res.status(404).json({
-        message: "User not found",
-      });
+    if (!email) {
+      return res.status(400).json({ message: "Email is required" });
     }
 
-    const resetToken = crypto.randomBytes(32).toString("hex");
+    const user = await User.findOne({ email });
 
-    user.resetPasswordToken = resetToken;
-    user.resetPasswordExpire = Date.now() + 3600000;
+    // Security: always return the same message whether user exists or not
+    // This prevents email enumeration attacks
+    if (!user) {
+      return res.status(200).json({ message: "Password reset email sent" });
+    }
 
+    // 1. Generate a raw random token (this goes in the email link)
+    const rawToken = crypto.randomBytes(32).toString("hex");
+
+    // 2. Hash it before saving to DB (so a DB breach can't be exploited)
+    const hashedToken = crypto
+      .createHash("sha256")
+      .update(rawToken)
+      .digest("hex");
+
+    // 3. Save the HASHED token + expiry to DB
+    user.resetPasswordToken = hashedToken;
+    user.resetPasswordExpire = Date.now() + 60 * 60 * 1000; // 1 hour
     await user.save();
 
-    const resetUrl = `http://localhost:5173/reset-password/${resetToken}`;
+    // 4. Send the RAW token in the email link
+    const resetUrl = `http://localhost:5173/reset-password/${rawToken}`;
 
     const transporter = nodemailer.createTransport({
       service: "gmail",
@@ -132,44 +145,82 @@ export const forgotPassword = async (req, res) => {
     });
 
     await transporter.sendMail({
+      from: `"SkillSwap" <${process.env.EMAIL_USER}>`,
       to: user.email,
-      subject: "Password Reset",
-      html: `<p>Click the link to reset password:</p>
-             <a href="${resetUrl}">${resetUrl}</a>`,
+      subject: "Reset Your SkillSwap Password",
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 480px; margin: auto;">
+          <h2 style="color: #7c3aed;">SkillSwap Password Reset</h2>
+          <p>Hi ${user.name},</p>
+          <p>You requested a password reset. Click the button below. 
+             This link expires in <strong>1 hour</strong>.</p>
+          <a href="${resetUrl}" 
+             style="display:inline-block; padding: 12px 24px; background:#7c3aed;
+                    color:#fff; border-radius:8px; text-decoration:none; margin: 16px 0;">
+            Reset Password
+          </a>
+          <p style="color:#888; font-size:12px;">
+            If you didn't request this, ignore this email. Your password won't change.
+          </p>
+        </div>
+      `,
     });
 
-    res.json({ message: "Password reset email sent" });
+    res.status(200).json({ message: "Password reset email sent" });
+
   } catch (error) {
-    console.error(error);
+    console.error("forgotPassword error:", error);
+    // If email sending fails, clean up the token so user can try again
+    if (error.message?.includes("nodemailer") || error.code === "EAUTH") {
+      await User.findOneAndUpdate(
+        { email: req.body.email },
+        { resetPasswordToken: undefined, resetPasswordExpire: undefined }
+      );
+      return res.status(500).json({ message: "Failed to send email. Check your email configuration." });
+    }
     res.status(500).json({ message: "Server error" });
   }
 };
+
+/* ================= RESET PASSWORD ================= */
 export const resetPassword = async (req, res) => {
   try {
     const { token } = req.params;
     const { password } = req.body;
 
+    if (!password || password.length < 6) {
+      return res.status(400).json({ message: "Password must be at least 6 characters" });
+    }
+
+    // 1. Hash the raw token from the URL to compare with DB
+    const hashedToken = crypto
+      .createHash("sha256")
+      .update(token)
+      .digest("hex");
+
+    // 2. Find user with matching hashed token that hasn't expired
     const user = await User.findOne({
-      resetPasswordToken: token,
+      resetPasswordToken: hashedToken,
       resetPasswordExpire: { $gt: Date.now() },
     });
 
     if (!user) {
-      return res.status(400).json({
-        message: "Invalid or expired token",
-      });
+      return res.status(400).json({ message: "Reset link is invalid or has expired" });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    // 3. Hash and set new password
+    user.password = await bcrypt.hash(password, 10);
 
-    user.password = hashedPassword;
+    // 4. Clear the reset token fields (one-time use)
     user.resetPasswordToken = undefined;
     user.resetPasswordExpire = undefined;
 
     await user.save();
 
-    res.json({ message: "Password reset successful" });
+    res.status(200).json({ message: "Password reset successful" });
+
   } catch (error) {
+    console.error("resetPassword error:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
