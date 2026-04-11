@@ -141,22 +141,34 @@
 // };
 
 // export default Login;
+<<<<<<< HEAD
 
+=======
+>>>>>>> 95b447386837e20fc0483b1252c4ec9a3ac5e12f
 import { useAuth } from "@/context/AuthContext";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
+<<<<<<< HEAD
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
+=======
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+>>>>>>> 95b447386837e20fc0483b1252c4ec9a3ac5e12f
 import { loginUser } from "@/services/auth";
 
 const Login = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
+<<<<<<< HEAD
 
+=======
+>>>>>>> 95b447386837e20fc0483b1252c4ec9a3ac5e12f
   const [form, setForm] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -173,7 +185,10 @@ const Login = () => {
 
     try {
       setLoading(true);
+<<<<<<< HEAD
 
+=======
+>>>>>>> 95b447386837e20fc0483b1252c4ec9a3ac5e12f
       const data = await loginUser(form);
 
       login(data.token, data.user);
@@ -189,7 +204,10 @@ const Login = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-[#0f172a] via-[#020617] to-black">
       <Card className="w-110 bg-white/10 backdrop-blur-xl border border-white/20 shadow-[0_0_60px_rgba(168,85,247,0.35)] rounded-3xl">
+<<<<<<< HEAD
 
+=======
+>>>>>>> 95b447386837e20fc0483b1252c4ec9a3ac5e12f
         <CardHeader className="text-center space-y-2 pb-6">
           <CardTitle className="text-4xl font-semibold text-white">
             Welcome Back
@@ -200,8 +218,11 @@ const Login = () => {
         </CardHeader>
 
         <CardContent className="space-y-6 px-8 pb-8">
+<<<<<<< HEAD
 
           {/* EMAIL */}
+=======
+>>>>>>> 95b447386837e20fc0483b1252c4ec9a3ac5e12f
           <Input
             name="email"
             placeholder="Email"
@@ -209,7 +230,10 @@ const Login = () => {
             className="bg-white/10 border-white/20 text-white h-12"
           />
 
+<<<<<<< HEAD
           {/* PASSWORD */}
+=======
+>>>>>>> 95b447386837e20fc0483b1252c4ec9a3ac5e12f
           <div className="relative">
             <Input
               name="password"
@@ -218,7 +242,10 @@ const Login = () => {
               onChange={handleChange}
               className="bg-white/10 border-white/20 text-white pr-14 h-12"
             />
+<<<<<<< HEAD
 
+=======
+>>>>>>> 95b447386837e20fc0483b1252c4ec9a3ac5e12f
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
@@ -228,6 +255,7 @@ const Login = () => {
             </button>
           </div>
 
+<<<<<<< HEAD
           {/* FORGOT PASSWORD */}
           <p
             onClick={() => navigate("/forgot-password")}
@@ -237,6 +265,8 @@ const Login = () => {
           </p>
 
           {/* LOGIN BUTTON */}
+=======
+>>>>>>> 95b447386837e20fc0483b1252c4ec9a3ac5e12f
           <Button
             onClick={handleLogin}
             disabled={loading}
@@ -245,21 +275,35 @@ const Login = () => {
             {loading ? "Logging in..." : "Login"}
           </Button>
 
+<<<<<<< HEAD
           {/* REGISTER */}
+=======
+>>>>>>> 95b447386837e20fc0483b1252c4ec9a3ac5e12f
           <p className="text-center text-gray-400">
             Don’t have an account?{" "}
             <span
               onClick={() => navigate("/register")}
+<<<<<<< HEAD
               className="text-purple-400 cursor-pointer hover:underline"
+=======
+              className="text-purple-400 cursor-pointer"
+>>>>>>> 95b447386837e20fc0483b1252c4ec9a3ac5e12f
             >
               Create one
             </span>
           </p>
+<<<<<<< HEAD
 
+=======
+>>>>>>> 95b447386837e20fc0483b1252c4ec9a3ac5e12f
         </CardContent>
       </Card>
     </div>
   );
 };
 
+<<<<<<< HEAD
 export default Login;
+=======
+export default Login;
+>>>>>>> 95b447386837e20fc0483b1252c4ec9a3ac5e12f

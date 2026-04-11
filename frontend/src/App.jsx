@@ -1,8 +1,15 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+<<<<<<< HEAD
 
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+=======
+import Home from "./pages/Home";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import { useAuth } from "./context/AuthContext";
+>>>>>>> 95b447386837e20fc0483b1252c4ec9a3ac5e12f
 import MatchPage from "./pages/MatchPage";
 import ProfileLayout from "@/pages/Profile/ProfileLayout";
 import IncomingRequests from "./pages/IncomingRequests";
@@ -10,6 +17,7 @@ import Search from "./pages/Search";
 import Chat from "./pages/Chat";
 import Chats from "./pages/Chats";
 import PublicProfile from "./pages/PublicProfile";
+<<<<<<< HEAD
 import VideoCallPage from "./pages/VideoCallPage";        // ✅ NEW
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/resetPassword";
@@ -73,6 +81,52 @@ export default function App() {
           path="/video-call/:userId"
           element={isAuth ? <VideoCallPage /> : <Navigate to="/login" />}
         />
+=======
+
+export default function App() {
+  const { isAuth } = useAuth();
+
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route
+          path="/"
+          element={isAuth ? <Home /> : <Navigate to="/login" />}
+        />
+
+        <Route
+          path="/login"
+          element={!isAuth ? <Login /> : <Navigate to="/" />}
+        />
+
+        <Route
+          path="/register"
+          element={!isAuth ? <Register /> : <Navigate to="/" />}
+        />
+
+        <Route
+          path="/profile"
+          element={isAuth ? <ProfileLayout /> : <Navigate to="/login" />}
+        />
+
+        <Route
+          path="/matches"
+          element={isAuth ? <MatchPage /> : <Navigate to="/login" />}
+        />
+
+        <Route
+          path="/requests"
+          element={isAuth ? <IncomingRequests /> : <Navigate to="/login" />}
+        />
+
+        <Route
+          path="/search"
+          element={isAuth ? <Search /> : <Navigate to="/login" />}
+        />
+        <Route path="/profile/:id" element={<PublicProfile />} />
+        <Route path="/chat/:userId" element={<Chat />} />
+        <Route path="/chats" element={<Chats />} />
+>>>>>>> 95b447386837e20fc0483b1252c4ec9a3ac5e12f
       </Routes>
     </BrowserRouter>
   );

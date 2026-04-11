@@ -3,7 +3,10 @@ import dotenv from "dotenv";
 import express from "express";
 import http from "http";
 import { Server } from "socket.io";
+<<<<<<< HEAD
 import { v4 as uuidv4 } from "uuid";
+=======
+>>>>>>> 95b447386837e20fc0483b1252c4ec9a3ac5e12f
 
 import connectDB from "./config/db.js";
 
@@ -14,24 +17,42 @@ import matchRoutes from "./routes/matchRoutes.js";
 import matchRequestRoutes from "./routes/matchRequestRoutes.js";
 import searchRoutes from "./routes/searchRoutes.js";
 import conversationRoutes from "./routes/conversationRoutes.js";
+<<<<<<< HEAD
 import messageRoutes from "./routes/messageRoutes.js";
 import sessionRoutes from "./routes/sessionRoutes.js";
 import callHistoryRoutes from "./routes/callHistoryRoutes.js";
+=======
+>>>>>>> 95b447386837e20fc0483b1252c4ec9a3ac5e12f
 
 import { errorHandler } from "./middleware/errorMiddleware.js";
 import Message from "./models/Message.js";
 import Conversation from "./models/Conversation.js";
+<<<<<<< HEAD
 import CallHistory from "./models/CallHistory.js";
+=======
+import messageRoutes from "./routes/messageRoutes.js";
+import sessionRoutes from "./routes/sessionRoutes.js";
+import { protect } from "./middleware/authMiddleware.js";
+>>>>>>> 95b447386837e20fc0483b1252c4ec9a3ac5e12f
 
 dotenv.config();
 
 const app = express();
+<<<<<<< HEAD
 const server = http.createServer(app);
 
 // ── Socket.IO ────────────────────────────────────────────────────────────────
 const io = new Server(server, {
   cors: {
     origin: "http://localhost:5173",
+=======
+const server = http.createServer(app); // ✅ create HTTP server
+
+// ✅ Initialize Socket.io
+const io = new Server(server, {
+  cors: {
+    origin: "http://localhost:5173", // your frontend port
+>>>>>>> 95b447386837e20fc0483b1252c4ec9a3ac5e12f
     methods: ["GET", "POST"],
   },
 });
@@ -39,7 +60,11 @@ const io = new Server(server, {
 app.use(cors());
 app.use(express.json());
 
+<<<<<<< HEAD
 // ── REST Routes ──────────────────────────────────────────────────────────────
+=======
+// Routes
+>>>>>>> 95b447386837e20fc0483b1252c4ec9a3ac5e12f
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/skill", skillRoutes);
@@ -50,12 +75,16 @@ app.use("/api/conversation", conversationRoutes);
 app.use("/api/message", messageRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/sessions", sessionRoutes);
+<<<<<<< HEAD
 app.use("/api/calls", callHistoryRoutes);   // ✅ NEW: call history REST API
+=======
+>>>>>>> 95b447386837e20fc0483b1252c4ec9a3ac5e12f
 
 app.get("/", (req, res) => {
   res.send("SkillSwap backend running");
 });
 
+<<<<<<< HEAD
 // ── Socket.IO ─────────────────────────────────────────────────────────────────
 //
 // userId  -> socketId   (for routing calls to the right peer)
@@ -77,19 +106,46 @@ io.on("connection", (socket) => {
   socket.on("joinRoom", (roomId) => {
     socket.join(roomId);
     console.log("Joined chat room:", roomId);
+=======
+// 🔥 SOCKET LOGIC
+io.on("connection", (socket) => {
+  console.log("User connected:", socket.id);
+
+  socket.on("joinRoom", (roomId) => {
+    socket.join(roomId);
+    console.log("Joined room:", roomId);
+>>>>>>> 95b447386837e20fc0483b1252c4ec9a3ac5e12f
   });
 
   socket.on("sendMessage", async (data) => {
     try {
       const { conversationId, sender, text } = data;
+<<<<<<< HEAD
       const newMessage = await Message.create({ conversationId, sender, text });
       await Conversation.findByIdAndUpdate(conversationId, { lastMessage: text });
+=======
+
+      // 1️⃣ Save message in DB
+      const newMessage = await Message.create({
+        conversationId,
+        sender,
+        text,
+      });
+
+      // 2️⃣ Update last message in conversation
+      await Conversation.findByIdAndUpdate(conversationId, {
+        lastMessage: text,
+      });
+
+      // 3️⃣ Emit to room
+>>>>>>> 95b447386837e20fc0483b1252c4ec9a3ac5e12f
       io.to(conversationId).emit("receiveMessage", newMessage);
     } catch (error) {
       console.log("Message save error:", error);
     }
   });
 
+<<<<<<< HEAD
   // ── WebRTC Signaling ───────────────────────────────────────────────────────
 
   /**
@@ -281,12 +337,24 @@ io.on("connection", (socket) => {
 });
 
 // ── Error middleware (always last) ────────────────────────────────────────────
+=======
+  socket.on("disconnect", () => {
+    console.log("User disconnected:", socket.id);
+  });
+});
+
+// Error middleware (LAST)
+>>>>>>> 95b447386837e20fc0483b1252c4ec9a3ac5e12f
 app.use(errorHandler);
 
 const PORT = Number(process.env.PORT) || 5000;
 
 const startServer = async () => {
   await connectDB();
+<<<<<<< HEAD
+=======
+
+>>>>>>> 95b447386837e20fc0483b1252c4ec9a3ac5e12f
   server.listen(PORT, "127.0.0.1", () => {
     console.log(`🚀 Server listening on http://127.0.0.1:${PORT}`);
   });

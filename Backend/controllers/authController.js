@@ -1,12 +1,12 @@
 import dotenv from "dotenv";
 import crypto from "crypto";
 import nodemailer from "nodemailer";
+
 dotenv.config();
 
 import User from "../models/User.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-
 /* ================= HELPER ================= */
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -101,6 +101,7 @@ export const login = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+<<<<<<< HEAD
 export const forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
@@ -116,8 +117,7 @@ export const forgotPassword = async (req, res) => {
     const resetToken = crypto.randomBytes(32).toString("hex");
 
     user.resetPasswordToken = resetToken;
-
-    user.resetPasswordExpire = Date.now() + 3600000; // 1 hour
+    user.resetPasswordExpire = Date.now() + 3600000;
 
     await user.save();
 
@@ -163,7 +163,6 @@ export const resetPassword = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     user.password = hashedPassword;
-
     user.resetPasswordToken = undefined;
     user.resetPasswordExpire = undefined;
 
