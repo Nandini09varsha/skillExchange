@@ -19,6 +19,14 @@ const userSchema = new mongoose.Schema(
       required: true,
     },
 
+    resetPasswordToken: {
+      type: String,
+    },
+
+    resetPasswordExpire: {
+      type: Date,
+    },
+
     collegeName: {
       type: String,
     },
@@ -69,7 +77,7 @@ const userSchema = new mongoose.Schema(
     // CREDIT SYSTEM
     credits: {
       type: Number,
-      default: 10, // starting credits
+      default: 10,
     },
 
     sessionsTaught: {
@@ -81,6 +89,7 @@ const userSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+
     // REVIEW SYSTEM
     reviews: [
       {

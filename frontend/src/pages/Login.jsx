@@ -140,7 +140,6 @@
 //   );
 // };
 
-// export default Login;
 import { useAuth } from "@/context/AuthContext";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -170,9 +169,7 @@ const Login = () => {
     try {
       setLoading(true);
       const data = await loginUser(form);
-
       login(data.token, data.user);
-
       navigate("/");
     } catch (err) {
       alert(err.response?.data?.message || "Login failed");
@@ -218,6 +215,13 @@ const Login = () => {
             </button>
           </div>
 
+          <p
+            onClick={() => navigate("/forgot-password")}
+            className="text-purple-400 text-sm cursor-pointer text-right hover:underline"
+          >
+            Forgot Password?
+          </p>
+
           <Button
             onClick={handleLogin}
             disabled={loading}
@@ -227,10 +231,10 @@ const Login = () => {
           </Button>
 
           <p className="text-center text-gray-400">
-            Don’t have an account?{" "}
+            Don't have an account?{" "}
             <span
               onClick={() => navigate("/register")}
-              className="text-purple-400 cursor-pointer"
+              className="text-purple-400 cursor-pointer hover:underline"
             >
               Create one
             </span>
