@@ -20,6 +20,7 @@ import Conversation from "./models/Conversation.js";
 import messageRoutes from "./routes/messageRoutes.js";
 import sessionRoutes from "./routes/sessionRoutes.js";
 import { protect } from "./middleware/authMiddleware.js";
+import notificationRoutes from "./routes/notificationRoutes.js";
 
 dotenv.config();
 
@@ -48,6 +49,7 @@ app.use("/api/conversation", conversationRoutes);
 app.use("/api/message", messageRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/sessions", sessionRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 app.get("/", (req, res) => {
   res.send("SkillSwap backend running");

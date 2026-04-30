@@ -3,6 +3,8 @@ import { NavLink, Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { Search } from "lucide-react";
 import { MessageCircle } from "lucide-react";
+import NotificationBell from "./NotificationBell";
+import { IoNotifications } from "react-icons/io5";
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -58,6 +60,21 @@ export default function Navbar() {
           Messages
         </span>
       </button>
+      {/* 🔔 Bell (SAME STYLE, SEPARATE) */}
+      <div
+        onClick={() => navigate("/notifications")}
+        className="relative flex items-center gap-2 px-3 py-2 rounded-full 
+       hover:bg-white/10 
+       hover:shadow-[0_0_10px_rgba(168,85,247,0.6)]
+       transition duration-200 cursor-pointer"
+      >
+        <IoNotifications size={38} className="text-white" />
+
+        {/* 🔴 Count */}
+        <span className="absolute -top-2 -right-2 bg-red-500 text-white text-s font-bold min-w-[22px] h-[22px] flex items-center justify-center rounded-full shadow-md">
+          56
+        </span>
+      </div>
       {/* Right Section */}
       <div className="flex items-center gap-4">
         {!isAuth ? (

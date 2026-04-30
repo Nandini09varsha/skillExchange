@@ -12,21 +12,29 @@ export const protect = async (req, res, next) => {
   }
 
   if (!token) {
-    return res.status(401).json({ message: "Not authorized, token missing" });
+    return res.status(401).json({ message: "Token missing", code: "NO_TOKEN" });
   }
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
     const user = await User.findById(decoded.id).select("-password");
 
     if (!user) {
-      return res.status(401).json({ message: "User not found" });
+      return res
+        .status(401)
+        .json({ message: "User not found", code: "USER_NOT_FOUND" });
     }
 
     req.user = user;
     next();
   } catch (err) {
-    res.status(401).json({ message: "Not authorized, token invalid" });
+    if (err.name === "TokenExpiredError") {
+      return res
+        .status(401)
+        .json({ message: "Token expired", code: "TOKEN_EXPIRED" });
+    }
+    return res
+      .status(401)
+      .json({ message: "Token invalid", code: "TOKEN_INVALID" });
   }
 };

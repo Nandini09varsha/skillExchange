@@ -1,4 +1,5 @@
 import axios from "axios";
+
 const API = axios.create({
   baseURL: "http://127.0.0.1:5000/api",
 });
@@ -12,7 +13,34 @@ API.interceptors.request.use(
     }
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
+);
+
+// 🔄 Auto-logout when token is expired or invalid
+API.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const code = error.response?.data?.code;
+    const status = error.response?.status;
+
+    if (
+      status === 401 &&
+      (code === "TOKEN_EXPIRED" ||
+        code === "TOKEN_INVALID" ||
+        code === "NO_TOKEN")
+    ) {
+      // Clear stale auth data
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+
+      // Redirect to login (works outside React components)
+      if (window.location.pathname !== "/login") {
+        window.location.href = "/login";
+      }
+    }
+
+    return Promise.reject(error);
+  },
 );
 
 export const loginUser = async (data) => {

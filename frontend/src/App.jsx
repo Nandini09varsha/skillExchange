@@ -10,6 +10,7 @@ import Search from "./pages/Search";
 import Chat from "./pages/Chat";
 import Chats from "./pages/Chats";
 import PublicProfile from "./pages/PublicProfile";
+import Notifications from "./pages/Notifications";
 
 export default function App() {
   const { isAuth } = useAuth();
@@ -54,6 +55,7 @@ export default function App() {
         <Route path="/profile/:id" element={<PublicProfile />} />
         <Route path="/chat/:userId" element={<Chat />} />
         <Route path="/chats" element={<Chats />} />
+        <Route path="/notifications" element={<Notifications />} />
       </Routes>
     </BrowserRouter>
   );

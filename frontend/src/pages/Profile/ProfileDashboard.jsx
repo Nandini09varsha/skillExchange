@@ -3,14 +3,29 @@ import StatCard from "./components/StatCard";
 import TaskList from "./components/TaskList";
 import ScoreCard from "./components/ScoreCard";
 import StatisticsCard from "./components/StatisticsCard";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 
 export default function ProfileDashboard() {
-  const [stats, setStats] = useState({
-    activeGoals: 3,
-    completedTasks: 6,
-    dueTasks: 2,
-  });
+  const [dashboardData, setDashboardData] = useState(null);
+
+  // ✅ FETCH DATA FROM BACKEND
+  useEffect(() => {
+    const fetchDashboard = async () => {
+      try {
+        const res = await axios.get(
+          "http://127.0.0.1:5000/api/sessions/dashboard",
+        );
+
+        console.log("Dashboard Data:", res.data);
+        setDashboardData(res.data);
+      } catch (err) {
+        console.error("Error fetching dashboard:", err);
+      }
+    };
+
+    fetchDashboard();
+  }, []);
 
   return (
     <div className="space-y-8">
@@ -28,9 +43,20 @@ export default function ProfileDashboard() {
         <div className="space-y-6">
           {/* Stats */}
           <div className="grid grid-cols-3 gap-6">
-            <StatCard title="Active Goals" value={stats.activeGoals} />
-            <StatCard title="Completed Tasks" value={stats.completedTasks} />
-            <StatCard title="Due Tasks" value={stats.dueTasks} />
+            <StatCard
+              title="Active Goals"
+              value={dashboardData?.teaching?.stats?.active || 0}
+            />
+
+            <StatCard
+              title="Completed Tasks"
+              value={dashboardData?.teaching?.stats?.completed || 0}
+            />
+
+            <StatCard
+              title="Due Tasks"
+              value={dashboardData?.teaching?.stats?.pending || 0}
+            />
           </div>
 
           {/* Tasks */}
