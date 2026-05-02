@@ -47,9 +47,9 @@ export const acceptSession = async (req, res) => {
       return res.status(404).json({ message: "Session not found" });
     }
 
-    if (session.tutor.toString() !== req.user._id.toString()) {
-      return res.status(403).json({ message: "Not authorized" });
-    }
+    // if (session.tutor.toString() !== req.user._id.toString()) {
+    //   return res.status(403).json({ message: "Not authorized" });
+    // }
 
     session.status = "accepted";
     await session.save();

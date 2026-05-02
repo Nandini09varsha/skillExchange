@@ -4,16 +4,45 @@ import {
   acceptSession,
   completeSession,
 } from "../controllers/sessionController.js";
-import { protect } from "../middleware/authMiddleware.js";
 import Session from "../models/Session.js";
 
 const router = express.Router();
 
 // =============================
-// CREATE / UPDATE ROUTES
+// CREATE SESSION
 // =============================
 router.post("/", createSession);
+
+// =============================
+// ACCEPT SESSION
+// =============================
 router.put("/accept/:id", acceptSession);
+
+// =============================
+// REJECT SESSION
+// =============================
+router.put("/reject/:id", async (req, res) => {
+  try {
+    const session = await Session.findById(req.params.id);
+
+    if (!session) {
+      return res.status(404).json({ message: "Session not found" });
+    }
+
+    session.status = "rejected";
+    await session.save();
+
+    res.json({ message: "Session rejected successfully" });
+
+  } catch (err) {
+    console.error("Reject session error:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// =============================
+// COMPLETE SESSION
+// =============================
 router.put("/complete/:id", completeSession);
 
 // =============================
@@ -21,26 +50,22 @@ router.put("/complete/:id", completeSession);
 // =============================
 router.get("/dashboard", async (req, res) => {
   try {
-    // 👉 TEMP: get any userId from DB (since auth is off)
-    const sampleSession = await Session.findOne();
 
-    if (!sampleSession) {
-      return res.json({
-        teaching: {
-          stats: { active: 0, completed: 0, pending: 0 },
-          sessions: [],
-        },
-        learning: {
-          stats: { active: 0, completed: 0, pending: 0 },
-          sessions: [],
-        },
-      });
+    const { userId } = req.query;
+
+    if (!userId) {
+      return res.status(400).json({ message: "userId required" });
     }
 
-    const userId = sampleSession.tutor;
+    // Sessions where user is tutor (incoming requests)
+    const teachingSessions = await Session
+      .find({ tutor: userId })
+      .populate("requester", "name");
 
-    const teachingSessions = await Session.find({ tutor: userId });
-    const learningSessions = await Session.find({ requester: userId });
+    // Sessions where user is requester (sent requests)
+    const learningSessions = await Session
+      .find({ requester: userId })
+      .populate("tutor", "name");
 
     const countStats = (sessions) => ({
       active: sessions.filter((s) => s.status === "accepted").length,
@@ -58,8 +83,9 @@ router.get("/dashboard", async (req, res) => {
         sessions: learningSessions,
       },
     });
+
   } catch (err) {
-    console.error("ERROR 👉", err);
+    console.error("Dashboard error:", err);
     res.status(500).json({ error: err.message });
   }
 });
