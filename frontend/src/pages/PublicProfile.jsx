@@ -19,7 +19,32 @@ export default function PublicProfile() {
 
     fetchUser();
   }, [id]);
+const requestSession = async () => {
+  try {
+    const loggedUser = JSON.parse(localStorage.getItem("user"));
 
+    const res = await fetch("http://localhost:5000/api/sessions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+     body: JSON.stringify({
+  requesterId: loggedUser.id,
+  tutorId: user._id,
+  skill: user.skillsOffered?.[0] || "General",
+  mode: "Chat"
+})
+    });
+
+    const data = await res.json();
+
+    alert("Session request sent!");
+    console.log(data);
+
+  } catch (err) {
+    console.error(err);
+  }
+};
   if (!user) {
     return <div className="text-white p-10">Loading...</div>;
   }
@@ -101,10 +126,12 @@ export default function PublicProfile() {
           >
             Message
           </button>
-
-          <button className="bg-[#00a884] hover:bg-[#019875] px-6 py-2 rounded-lg">
-            Request Session
-          </button>
+<button
+  onClick={requestSession}
+  className="bg-[#00a884] hover:bg-[#019875] px-6 py-2 rounded-lg"
+>
+  Request Session
+</button>
         </div>
       </div>
     </div>

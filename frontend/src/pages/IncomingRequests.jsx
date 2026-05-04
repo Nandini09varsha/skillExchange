@@ -9,32 +9,42 @@ export default function IncomingRequests() {
     fetchRequests();
   }, []);
 
-  const fetchRequests = async () => {
-    try {
-      const res = await API.get("/match-request/incoming");
-      setRequests(res.data);
-    } catch (err) {
-      console.error("Fetch incoming requests error:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
+const fetchRequests = async () => {
+  try {
+    const user = JSON.parse(localStorage.getItem("user"));
 
-  const respond = async (requestId, action) => {
-    try {
-      await API.post("/match-request/respond", {
-        requestId,
-        action, // "accepted" | "rejected"
-      });
+    const res = await API.get(`/sessions/dashboard?userId=${user.id}`);
 
-      // Remove handled request from UI
-      setRequests((prev) =>
-        prev.filter((req) => req._id !== requestId)
-      );
-    } catch (err) {
-      alert(err.response?.data?.message || "Action failed");
-    }
-  };
+    // incoming requests = teaching sessions
+    const incoming = res.data.teaching.sessions.filter(
+      (s) => s.status === "pending"
+    );
+
+    setRequests(incoming);
+
+  } catch (err) {
+    console.error("Fetch incoming requests error:", err);
+  } finally {
+    setLoading(false);
+  }
+};
+
+  const respond = async (sessionId, action) => {
+  try {
+
+    if (action === "accepted") {
+  await API.put(`/sessions/accept/${sessionId}`);
+} else {
+  alert("Reject feature not implemented yet");
+}
+    setRequests((prev) =>
+      prev.filter((req) => req._id !== sessionId)
+    );
+
+  } catch (err) {
+    alert(err.response?.data?.message || "Action failed");
+  }
+};
 
   if (loading) {
     return (
@@ -62,13 +72,13 @@ export default function IncomingRequests() {
                 key={req._id}
                 className="bg-white/10 border border-white/20 rounded-2xl p-6 backdrop-blur-xl"
               >
-                <h3 className="text-xl font-medium">
-                  {req.fromUser.name}
-                </h3>
+               <h3 className="text-xl font-medium">
+  {req.requester?.name}
+</h3>
                 <p className="text-sm text-gray-400 mb-3">
                   Wants to learn:{" "}
                   <span className="text-purple-400">
-                    {req.skillRequested}
+                    {req.skill}
                   </span>
                 </p>
 

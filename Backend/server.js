@@ -21,6 +21,8 @@ import callHistoryRoutes from "./routes/callHistoryRoutes.js";
 import { errorHandler } from "./middleware/errorMiddleware.js";
 import Message from "./models/Message.js";
 import Conversation from "./models/Conversation.js";
+//import messageRoutes from "./routes/messageRoutes.js";
+//import sessionRoutes from "./routes/sessionRoutes.js";
 import { protect } from "./middleware/authMiddleware.js";
 import notificationRoutes from "./routes/notificationRoutes.js";
 import CallHistory from "./models/CallHistory.js";
@@ -79,6 +81,30 @@ io.on("connection", (socket) => {
   socket.on("joinRoom", (roomId) => {
     socket.join(roomId);
     console.log("Joined chat room:", roomId);
+  });
+
+  socket.on("sendMessage", (data) => {
+    io.to(data.conversationId).emit("receiveMessage", data);
+  });
+
+  // ⭐ ADD THIS
+  socket.on("videoCallRequest", (data) => {
+    console.log("videoCallRequest received:", data);
+
+    const receiverSocket = userSocketMap[data.to];
+
+    if (receiverSocket) {
+      io.to(receiverSocket).emit("videoCallRequest", data);
+    }
+  });
+
+  /* VIDEO CALL ACCEPTED */
+  socket.on("videoCallAccepted", (data) => {
+    const callerSocket = userSocketMap[data.to];
+
+    if (callerSocket) {
+      io.to(callerSocket).emit("videoCallAccepted", data);
+    }
   });
 
   socket.on("sendMessage", async (data) => {

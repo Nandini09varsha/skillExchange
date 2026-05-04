@@ -18,16 +18,14 @@ const generateToken = (id) => {
 /* ================= REGISTER ================= */
 export const register = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, skillsOffered, skillsWanted } = req.body;
 
-    // Validate required fields
     if (!name || !email || !password) {
       return res.status(400).json({
         message: "Name, email and password are required",
       });
     }
 
-    // Check if user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({
@@ -35,17 +33,16 @@ export const register = async (req, res) => {
       });
     }
 
-    // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create user (ONLY required fields)
     const user = await User.create({
       name,
       email,
       password: hashedPassword,
+      skillsOffered: skillsOffered || [],
+      skillsWanted: skillsWanted || [],
     });
 
-    // Respond with JWT
     res.status(201).json({
       message: "User registered successfully",
       token: generateToken(user._id),
