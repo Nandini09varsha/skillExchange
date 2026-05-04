@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 import crypto from "crypto";
 import nodemailer from "nodemailer";
+import { OAuth2Client } from "google-auth-library";
 
 dotenv.config();
 
@@ -102,6 +103,49 @@ export const login = async (req, res) => {
   }
 };
 
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+export const googleAuth = async (req, res) => {
+  console.log("🔥 GOOGLE LOGIN HIT");
+
+  const { token } = req.body;
+
+  try {
+    const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+
+    const payload = ticket.getPayload();
+    console.log("PAYLOAD:", payload);
+
+    const { email, name, picture } = payload;
+
+    let user = await User.findOne({ email });
+    console.log("FOUND USER:", user);
+
+    if (!user) {
+      console.log("🚀 Creating new Google user...");
+
+      user = await User.create({
+        email,
+        name,
+        avatar: picture,
+        authProvider: "google",
+      });
+
+      console.log("✅ USER CREATED:", user);
+    }
+
+    const appToken = generateToken(user._id);
+
+    res.json({ token: appToken, user });
+  } catch (err) {
+    console.error("❌ ERROR:", err);
+    res.status(401).json({ message: "Google authentication failed" });
+  }
+};
+
 /* ================= FORGOT PASSWORD ================= */
 export const forgotPassword = async (req, res) => {
   try {
@@ -167,16 +211,17 @@ export const forgotPassword = async (req, res) => {
     });
 
     res.status(200).json({ message: "Password reset email sent" });
-
   } catch (error) {
     console.error("forgotPassword error:", error);
     // If email sending fails, clean up the token so user can try again
     if (error.message?.includes("nodemailer") || error.code === "EAUTH") {
       await User.findOneAndUpdate(
         { email: req.body.email },
-        { resetPasswordToken: undefined, resetPasswordExpire: undefined }
+        { resetPasswordToken: undefined, resetPasswordExpire: undefined },
       );
-      return res.status(500).json({ message: "Failed to send email. Check your email configuration." });
+      return res.status(500).json({
+        message: "Failed to send email. Check your email configuration.",
+      });
     }
     res.status(500).json({ message: "Server error" });
   }
@@ -189,14 +234,13 @@ export const resetPassword = async (req, res) => {
     const { password } = req.body;
 
     if (!password || password.length < 6) {
-      return res.status(400).json({ message: "Password must be at least 6 characters" });
+      return res
+        .status(400)
+        .json({ message: "Password must be at least 6 characters" });
     }
 
     // 1. Hash the raw token from the URL to compare with DB
-    const hashedToken = crypto
-      .createHash("sha256")
-      .update(token)
-      .digest("hex");
+    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
 
     // 2. Find user with matching hashed token that hasn't expired
     const user = await User.findOne({
@@ -205,7 +249,9 @@ export const resetPassword = async (req, res) => {
     });
 
     if (!user) {
-      return res.status(400).json({ message: "Reset link is invalid or has expired" });
+      return res
+        .status(400)
+        .json({ message: "Reset link is invalid or has expired" });
     }
 
     // 3. Hash and set new password
@@ -218,7 +264,6 @@ export const resetPassword = async (req, res) => {
     await user.save();
 
     res.status(200).json({ message: "Password reset successful" });
-
   } catch (error) {
     console.error("resetPassword error:", error);
     res.status(500).json({ message: "Server error" });

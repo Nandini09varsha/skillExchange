@@ -16,7 +16,7 @@ const userSchema = new mongoose.Schema(
 
     password: {
       type: String,
-      required: true,
+      required: false,
     },
 
     resetPasswordToken: {
@@ -88,6 +88,10 @@ const userSchema = new mongoose.Schema(
     sessionsLearned: {
       type: Number,
       default: 0,
+    },
+    authProvider: {
+      type: String,
+      default: "local",
     },
 
     // REVIEW SYSTEM

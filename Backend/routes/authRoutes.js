@@ -1,5 +1,6 @@
 import express from "express";
 import { register, login, forgotPassword, resetPassword } from "../controllers/authController.js";
+import { googleAuth } from "../controllers/authController.js";
 
 const router = express.Router();
 
@@ -11,5 +12,6 @@ router.post("/logout", (req, res) => {
 
 router.post("/forgot-password", forgotPassword);
 router.post("/reset-password/:token", resetPassword);
+router.post("/google",googleAuth);
 
 export default router;

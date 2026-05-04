@@ -21,8 +21,6 @@ import callHistoryRoutes from "./routes/callHistoryRoutes.js";
 import { errorHandler } from "./middleware/errorMiddleware.js";
 import Message from "./models/Message.js";
 import Conversation from "./models/Conversation.js";
-import messageRoutes from "./routes/messageRoutes.js";
-import sessionRoutes from "./routes/sessionRoutes.js";
 import { protect } from "./middleware/authMiddleware.js";
 import notificationRoutes from "./routes/notificationRoutes.js";
 import CallHistory from "./models/CallHistory.js";
@@ -39,7 +37,12 @@ const io = new Server(server, {
   },
 });
 
-app.use(cors());
+app.use(
+  cors({
+    origin: ["http://localhost:5173", "http://127.0.0.1:5173"],
+    credentials: true,
+  }),
+);
 app.use(express.json());
 
 // Routes
@@ -55,6 +58,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/sessions", sessionRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/calls", callHistoryRoutes);
+app.use("/auth", authRoutes);
 
 app.get("/", (req, res) => {
   res.send("SkillSwap backend running");
@@ -81,7 +85,9 @@ io.on("connection", (socket) => {
     try {
       const { conversationId, sender, text } = data;
       const newMessage = await Message.create({ conversationId, sender, text });
-      await Conversation.findByIdAndUpdate(conversationId, { lastMessage: text });
+      await Conversation.findByIdAndUpdate(conversationId, {
+        lastMessage: text,
+      });
       io.to(conversationId).emit("receiveMessage", newMessage);
     } catch (error) {
       console.log("Message save error:", error);
@@ -109,10 +115,18 @@ io.on("connection", (socket) => {
     }
 
     if (targetSocketId) {
-      io.to(targetSocketId).emit("incoming-call", { from, fromName, callId, offer });
+      io.to(targetSocketId).emit("incoming-call", {
+        from,
+        fromName,
+        callId,
+        offer,
+      });
       console.log(`Call (${callId}): ${from} -> ${to}`);
     } else {
-      socket.emit("call-failed", { callId, reason: "User is offline or unavailable." });
+      socket.emit("call-failed", {
+        callId,
+        reason: "User is offline or unavailable.",
+      });
       try {
         await CallHistory.findOneAndUpdate({ callId }, { status: "missed" });
       } catch (_) {}
@@ -127,7 +141,7 @@ io.on("connection", (socket) => {
     try {
       await CallHistory.findOneAndUpdate(
         { callId },
-        { status: "active", startedAt: new Date() }
+        { status: "active", startedAt: new Date() },
       );
     } catch (dbErr) {
       console.error("CallHistory update (answer) error:", dbErr);
@@ -155,7 +169,12 @@ io.on("connection", (socket) => {
           : 0;
         await CallHistory.findOneAndUpdate(
           { callId },
-          { status: "ended", endedAt, duration, hadScreenShare: hadScreenShare || false }
+          {
+            status: "ended",
+            endedAt,
+            duration,
+            hadScreenShare: hadScreenShare || false,
+          },
         );
       }
     } catch (dbErr) {
@@ -189,11 +208,20 @@ io.on("connection", (socket) => {
 
     if (disconnectedUserId) {
       for (const [callId, meta] of Object.entries(callSocketMap)) {
-        if (meta.callerId === disconnectedUserId || meta.calleeId === disconnectedUserId) {
-          const otherId = meta.callerId === disconnectedUserId ? meta.calleeId : meta.callerId;
+        if (
+          meta.callerId === disconnectedUserId ||
+          meta.calleeId === disconnectedUserId
+        ) {
+          const otherId =
+            meta.callerId === disconnectedUserId
+              ? meta.calleeId
+              : meta.callerId;
           const otherSocket = userSocketMap[otherId];
           if (otherSocket) {
-            io.to(otherSocket).emit("call-ended", { callId, reason: "Peer disconnected" });
+            io.to(otherSocket).emit("call-ended", {
+              callId,
+              reason: "Peer disconnected",
+            });
           }
           try {
             const record = await CallHistory.findOne({ callId });
@@ -204,7 +232,7 @@ io.on("connection", (socket) => {
                 : 0;
               await CallHistory.findOneAndUpdate(
                 { callId },
-                { status: "ended", endedAt, duration }
+                { status: "ended", endedAt, duration },
               );
             }
           } catch (_) {}
