@@ -14,7 +14,7 @@
 //   const handleReset = async () => {
 //     try {
 //       const res = await axios.post(
-//         `http://localhost:5000/api/auth/reset-password/${token}`,
+//         `https://skillswap-5t5e.onrender.com/api/auth/reset-password/${token}`,
 //         { password }
 //       );
 
@@ -99,15 +99,18 @@ const ResetPassword = () => {
     setLoading(true);
     try {
       const res = await axios.post(
-        `http://localhost:5000/api/auth/reset-password/${token}`,
-        { password }
+        `https://skillswap-5t5e.onrender.com/api/auth/reset-password/${token}`,
+        { password },
       );
       setMessage(res.data.message);
       setDone(true);
       // Redirect to login after 2.5 seconds
       setTimeout(() => navigate("/login"), 2500);
     } catch (err) {
-      setError(err.response?.data?.message || "Reset failed. The link may have expired.");
+      setError(
+        err.response?.data?.message ||
+          "Reset failed. The link may have expired.",
+      );
     } finally {
       setLoading(false);
     }
@@ -158,7 +161,9 @@ const ResetPassword = () => {
             <div className="text-center space-y-3">
               <div className="text-5xl">✅</div>
               <p className="text-green-400 text-sm">{message}</p>
-              <p className="text-gray-400 text-xs">Redirecting you to login...</p>
+              <p className="text-gray-400 text-xs">
+                Redirecting you to login...
+              </p>
             </div>
           )}
         </CardContent>

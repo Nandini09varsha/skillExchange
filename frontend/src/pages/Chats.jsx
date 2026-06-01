@@ -21,7 +21,7 @@ export default function Chats() {
     const fetchConversations = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:5000/api/conversation/${currentUserId}`,
+          `https://skillswap-5t5e.onrender.com/api/conversation/${currentUserId}`,
         );
         setConversations(res.data);
       } catch (error) {

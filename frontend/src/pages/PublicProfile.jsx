@@ -9,7 +9,9 @@ export default function PublicProfile() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/users/${id}`);
+        const res = await fetch(
+          `https://skillswap-5t5e.onrender.com/api/users/${id}`,
+        );
         const data = await res.json();
         setUser(data);
       } catch (err) {
@@ -19,32 +21,34 @@ export default function PublicProfile() {
 
     fetchUser();
   }, [id]);
-const requestSession = async () => {
-  try {
-    const loggedUser = JSON.parse(localStorage.getItem("user"));
+  const requestSession = async () => {
+    try {
+      const loggedUser = JSON.parse(localStorage.getItem("user"));
 
-    const res = await fetch("http://localhost:5000/api/sessions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-     body: JSON.stringify({
-  requesterId: loggedUser.id,
-  tutorId: user._id,
-  skill: user.skillsOffered?.[0] || "General",
-  mode: "Chat"
-})
-    });
+      const res = await fetch(
+        "https://skillswap-5t5e.onrender.com/api/sessions",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            requesterId: loggedUser.id,
+            tutorId: user._id,
+            skill: user.skillsOffered?.[0] || "General",
+            mode: "Chat",
+          }),
+        },
+      );
 
-    const data = await res.json();
+      const data = await res.json();
 
-    alert("Session request sent!");
-    console.log(data);
-
-  } catch (err) {
-    console.error(err);
-  }
-};
+      alert("Session request sent!");
+      console.log(data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
   if (!user) {
     return <div className="text-white p-10">Loading...</div>;
   }
@@ -126,12 +130,12 @@ const requestSession = async () => {
           >
             Message
           </button>
-<button
-  onClick={requestSession}
-  className="bg-[#00a884] hover:bg-[#019875] px-6 py-2 rounded-lg"
->
-  Request Session
-</button>
+          <button
+            onClick={requestSession}
+            className="bg-[#00a884] hover:bg-[#019875] px-6 py-2 rounded-lg"
+          >
+            Request Session
+          </button>
         </div>
       </div>
     </div>

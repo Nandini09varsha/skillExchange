@@ -218,7 +218,7 @@ npm run dev
 Backend runs on:
 
 ```
-http://localhost:5000
+https://skillswap-5t5e.onrender.com
 ```
 
 Frontend runs on:

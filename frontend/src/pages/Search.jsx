@@ -15,7 +15,7 @@ export default function Search() {
       setLoading(true);
 
       const res = await api.get(
-        `http://localhost:5000/api/users/search?query=${skill}`,
+        `https://skillswap-5t5e.onrender.com/api/users/search?query=${skill}`,
       );
 
       setResults(res.data);

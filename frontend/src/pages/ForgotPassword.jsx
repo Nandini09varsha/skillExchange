@@ -11,7 +11,7 @@
 //   const handleSubmit = async () => {
 //     try {
 //       const res = await axios.post(
-//         "http://localhost:5000/api/auth/forgot-password",
+//         "https://skillswap-5t5e.onrender.com/api/auth/forgot-password",
 //         { email }
 //       );
 
@@ -85,13 +85,15 @@ const ForgotPassword = () => {
     setLoading(true);
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/auth/forgot-password",
-        { email }
+        "https://skillswap-5t5e.onrender.com/api/auth/forgot-password",
+        { email },
       );
       setMessage(res.data.message);
       setSent(true);
     } catch (err) {
-      setError(err.response?.data?.message || "Something went wrong. Try again.");
+      setError(
+        err.response?.data?.message || "Something went wrong. Try again.",
+      );
     } finally {
       setLoading(false);
     }
@@ -103,7 +105,9 @@ const ForgotPassword = () => {
         <CardHeader className="text-center space-y-2 pb-6">
           <CardTitle className="text-3xl text-white">Forgot Password</CardTitle>
           <p className="text-gray-400">
-            {sent ? "Check your inbox" : "Enter your email to receive a reset link"}
+            {sent
+              ? "Check your inbox"
+              : "Enter your email to receive a reset link"}
           </p>
         </CardHeader>
 
@@ -138,7 +142,10 @@ const ForgotPassword = () => {
               <p className="text-gray-400 text-xs">
                 Didn't get it? Check your spam folder or{" "}
                 <button
-                  onClick={() => { setSent(false); setMessage(""); }}
+                  onClick={() => {
+                    setSent(false);
+                    setMessage("");
+                  }}
                   className="text-purple-400 underline"
                 >
                   try again
