@@ -44,10 +44,10 @@ app.use(
     origin: [
       "http://localhost:5173",
       "http://127.0.0.1:5173",
-      process.env.FRONTEND_URL,
+      "https://skill-exchange-lyart.vercel.app",
     ],
     credentials: true,
-  }),
+  })
 );
 app.use(express.json());
 
