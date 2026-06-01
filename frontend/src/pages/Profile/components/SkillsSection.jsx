@@ -12,7 +12,7 @@ export default function SkillsSection({ title, skills, type, refreshProfile }) {
 
     try {
       await axios.put(
-        "${import.meta.env.VITE_API_URL}/api/users/me",
+        `${import.meta.env.VITE_API_URL}/api/users/me`,
         {
           [type]: updatedSkills,
         },
@@ -34,7 +34,7 @@ export default function SkillsSection({ title, skills, type, refreshProfile }) {
 
     try {
       await axios.put(
-        "${import.meta.env.VITE_API_URL}/api/users/me",
+        `${import.meta.env.VITE_API_URL}/api/users/me`,
         {
           [type]: updatedSkills,
         },

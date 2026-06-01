@@ -43,7 +43,7 @@ const Login = () => {
     console.log("TOKEN:", credentialResponse);
     try {
       const res = await api.post(
-        "h${import.meta.env.VITE_API_URL}/auth/google",
+        `${import.meta.env.VITE_API_URL}/auth/google`,
         {
           token: credentialResponse.credential,
         },

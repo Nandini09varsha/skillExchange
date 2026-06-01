@@ -14,7 +14,7 @@ export default function NotificationBell() {
       if (!token) return;
 
       const res = await axios.get(
-        "${import.meta.env.VITE_API_URL}/api/notifications",
+        `${import.meta.env.VITE_API_URL}/api/notifications`,
         {
           headers: { Authorization: `Bearer ${token}` },
         },
@@ -66,7 +66,7 @@ export default function NotificationBell() {
     try {
       const token = localStorage.getItem("token");
       await axios.put(
-        "${import.meta.env.VITE_API_URL}/api/notifications/mark-all-read",
+        `${import.meta.env.VITE_API_URL}/api/notifications/mark-all-read`,
         {},
         { headers: { Authorization: `Bearer ${token}` } },
       );
