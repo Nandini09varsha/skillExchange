@@ -42,9 +42,12 @@ const Login = () => {
   const handleGoogleSuccess = async (credentialResponse) => {
     console.log("TOKEN:", credentialResponse);
     try {
-      const res = await api.post("http://127.0.0.1:5000/auth/google", {
-        token: credentialResponse.credential,
-      });
+      const res = await api.post(
+        "h${import.meta.env.VITE_API_URL}/auth/google",
+        {
+          token: credentialResponse.credential,
+        },
+      );
 
       login(res.data.token, res.data.user);
       navigate("/");

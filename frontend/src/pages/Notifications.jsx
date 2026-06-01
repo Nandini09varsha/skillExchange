@@ -14,9 +14,12 @@ export default function Notifications() {
         return;
       }
 
-      const res = await axios.get("http://127.0.0.1:5000/api/notifications", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await axios.get(
+        "h${import.meta.env.VITE_API_URL}/api/notifications",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
 
       setNotifications(res.data);
     } catch (err) {
@@ -37,7 +40,7 @@ export default function Notifications() {
     try {
       const token = localStorage.getItem("token");
       await axios.put(
-        `http://127.0.0.1:5000/api/notifications/${id}/read`,
+        `${import.meta.env.VITE_API_URL}/api/notifications/${id}/read`,
         {},
         { headers: { Authorization: `Bearer ${token}` } },
       );
@@ -53,7 +56,7 @@ export default function Notifications() {
     try {
       const token = localStorage.getItem("token");
       await axios.put(
-        "http://127.0.0.1:5000/api/notifications/mark-all-read",
+        "${import.meta.env.VITE_API_URL}/api/notifications/mark-all-read",
         {},
         { headers: { Authorization: `Bearer ${token}` } },
       );
@@ -66,9 +69,12 @@ export default function Notifications() {
   const deleteNotification = async (id) => {
     try {
       const token = localStorage.getItem("token");
-      await axios.delete(`http://127.0.0.1:5000/api/notifications/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axios.delete(
+        `${import.meta.env.VITE_API_URL}/api/notifications/${id}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
       setNotifications((prev) => prev.filter((n) => n._id !== id));
     } catch (err) {
       console.error("Delete error:", err.response?.data || err.message);

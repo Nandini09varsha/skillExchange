@@ -17,7 +17,9 @@ export default function ProfileDashboard() {
   // ==============================
   const fetchDashboard = async () => {
     try {
-      const res = await api.get("http://127.0.0.1:5000/api/sessions/dashboard");
+      const res = await api.get(
+        "${import.meta.env.VITE_API_URL}/api/sessions/dashboard",
+      );
       setDashboardData(res.data);
     } catch (err) {
       console.error("Error fetching dashboard:", err);
@@ -31,9 +33,12 @@ export default function ProfileDashboard() {
     try {
       const token = localStorage.getItem("token");
 
-      const res = await api.get("http://127.0.0.1:5000/api/users/me", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await api.get(
+        "${import.meta.env.VITE_API_URL}/api/users/me",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
 
       console.log("PROFILE:", res.data);
       setProfile(res.data);
