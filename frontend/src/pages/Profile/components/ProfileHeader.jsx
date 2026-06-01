@@ -1,22 +1,57 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { Camera, Pencil } from "lucide-react";
 
-export default function ProfileHeader() {
+export default function ProfileHeader({ user }) {
   const fileInputRef = useRef(null);
 
-  const [profileImage, setProfileImage] = useState("https://i.pravatar.cc/100");
+  const [profileImage, setProfileImage] = useState(() => {
+    return localStorage.getItem("profileImage") || "";
+  });
 
-  const [name, setName] = useState("Nandini Verma");
+  const [name, setName] = useState(() => {
+    return localStorage.getItem("name") || user?.name || "Your Name";
+  });
   const [role, setRole] = useState("SkillSwap Tutor");
   const [location, setLocation] = useState("India");
 
   const [editingField, setEditingField] = useState(null);
 
+  useEffect(() => {
+    setName(localStorage.getItem("name") || user?.name || "");
+    setRole(localStorage.getItem("role") || "SkillSwap Tutor");
+    setLocation(localStorage.getItem("location") || "India");
+  }, [user]);
+
+  useEffect(() => {
+    if (!localStorage.getItem("name") && user?.name) {
+      setName(user.name);
+    }
+  }, [user]);
+
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    setProfileImage(URL.createObjectURL(file));
+    if (file.size > 2 * 1024 * 1024) {
+      alert("Image too large (max 2MB)");
+      return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onloadend = () => {
+      const base64 = reader.result;
+
+      setProfileImage(base64); // show instantly
+      localStorage.setItem("profileImage", base64); // 🔥 persist
+    };
+
+    reader.readAsDataURL(file);
   };
+
+  const displayImage =
+    profileImage ||
+    user?.picture ||
+    "https://ui-avatars.com/api/?name=Nandini&background=7c3aed&color=fff";
 
   return (
     <div className="bg-white/5 border border-white/10 rounded-3xl p-7 flex justify-between items-center">
@@ -25,7 +60,7 @@ export default function ProfileHeader() {
         {/* PROFILE IMAGE */}
         <div className="relative group">
           <img
-            src={profileImage}
+            src={displayImage}
             className="w-30 h-30 rounded-full object-cover border border-white/20"
           />
 
@@ -57,7 +92,10 @@ export default function ProfileHeader() {
               <input
                 autoFocus
                 value={name}
-                onChange={(e) => setName(e.target.value)}
+                onChange={(e) => {
+                  setName(e.target.value);
+                  localStorage.setItem("name", e.target.value);
+                }}
                 onBlur={() => setEditingField(null)}
                 onKeyDown={(e) => e.key === "Enter" && setEditingField(null)}
                 className="bg-transparent border-b border-purple-500 text-4xl font-semibold outline-none"
@@ -84,7 +122,10 @@ export default function ProfileHeader() {
               <input
                 autoFocus
                 value={role}
-                onChange={(e) => setRole(e.target.value)}
+                onChange={(e) => {
+                  setRole(e.target.value);
+                  localStorage.setItem("role", e.target.value);
+                }}
                 onBlur={() => setEditingField(null)}
                 onKeyDown={(e) => e.key === "Enter" && setEditingField(null)}
                 className="bg-transparent border-b border-purple-500 text-2xl text-gray-300 outline-none"
@@ -111,7 +152,10 @@ export default function ProfileHeader() {
               <input
                 autoFocus
                 value={location}
-                onChange={(e) => setLocation(e.target.value)}
+                onChange={(e) => {
+                  setLocation(e.target.value);
+                  localStorage.setItem("location", e.target.value);
+                }}
                 onBlur={() => setEditingField(null)}
                 onKeyDown={(e) => e.key === "Enter" && setEditingField(null)}
                 className="

@@ -41,7 +41,11 @@ const io = new Server(server, {
 
 app.use(
   cors({
-    origin: ["http://localhost:5173", "http://127.0.0.1:5173"],
+    origin: [
+      "http://localhost:5173",
+      "http://127.0.0.1:5173",
+      process.env.FRONTEND_URL,
+    ],
     credentials: true,
   }),
 );
@@ -79,7 +83,16 @@ io.on("connection", (socket) => {
   });
 
   socket.on("joinRoom", (roomId) => {
+    // leave old chat rooms first
+    socket.rooms.forEach((room) => {
+      if (room !== socket.id) {
+        socket.leave(room);
+      }
+    });
+
+    // join current chat room
     socket.join(roomId);
+
     console.log("Joined chat room:", roomId);
   });
 

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axios from "axios";
+import api from "../lib/api";
 import ResultCard from "@/components/ResultCard";
 import { useNavigate } from "react-router-dom";
 
@@ -14,8 +14,8 @@ export default function Search() {
     try {
       setLoading(true);
 
-      const res = await axios.get(
-        `http://localhost:5000/api/search?skill=${skill}`,
+      const res = await api.get(
+        `http://localhost:5000/api/users/search?query=${skill}`,
       );
 
       setResults(res.data);
@@ -42,6 +42,7 @@ export default function Search() {
             placeholder="Search skill (e.g. Python, Guitar)"
             value={skill}
             onChange={(e) => setSkill(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
             className="flex-1 px-6 py-4 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 outline-none focus:ring-2 focus:ring-purple-500"
           />
 

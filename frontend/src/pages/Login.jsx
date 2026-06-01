@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { loginUser } from "@/services/auth";
 import { GoogleLogin } from "@react-oauth/google";
-import axios from "axios";
+import api from "../lib/api";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -42,7 +42,7 @@ const Login = () => {
   const handleGoogleSuccess = async (credentialResponse) => {
     console.log("TOKEN:", credentialResponse);
     try {
-      const res = await axios.post("http://127.0.0.1:5000/auth/google", {
+      const res = await api.post("http://127.0.0.1:5000/auth/google", {
         token: credentialResponse.credential,
       });
 

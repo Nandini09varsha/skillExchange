@@ -3,41 +3,66 @@ import StatCard from "./components/StatCard";
 import TaskList from "./components/TaskList";
 import ScoreCard from "./components/ScoreCard";
 import StatisticsCard from "./components/StatisticsCard";
+import SkillsSection from "./components/SkillsSection";
+
 import { useState, useEffect } from "react";
-import axios from "axios";
+import api from "../../lib/api";
 
 export default function ProfileDashboard() {
   const [dashboardData, setDashboardData] = useState(null);
+  const [profile, setProfile] = useState(null);
 
-  // ✅ FETCH DATA FROM BACKEND
+  // ==============================
+  // FETCH DASHBOARD
+  // ==============================
+  const fetchDashboard = async () => {
+    try {
+      const res = await api.get("http://127.0.0.1:5000/api/sessions/dashboard");
+      setDashboardData(res.data);
+    } catch (err) {
+      console.error("Error fetching dashboard:", err);
+    }
+  };
+
+  // ==============================
+  // FETCH PROFILE
+  // ==============================
+  const fetchProfile = async () => {
+    try {
+      const token = localStorage.getItem("token");
+
+      const res = await api.get("http://127.0.0.1:5000/api/users/me", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      console.log("PROFILE:", res.data);
+      setProfile(res.data);
+    } catch (err) {
+      console.error("Error fetching profile:", err);
+    }
+  };
+
+  // ==============================
+  // LOAD DATA
+  // ==============================
   useEffect(() => {
-    const fetchDashboard = async () => {
-      try {
-        const res = await axios.get(
-          "http://127.0.0.1:5000/api/sessions/dashboard",
-        );
-
-        console.log("Dashboard Data:", res.data);
-        setDashboardData(res.data);
-      } catch (err) {
-        console.error("Error fetching dashboard:", err);
-      }
+    const loadData = async () => {
+      await fetchDashboard();
+      await fetchProfile();
     };
 
-    fetchDashboard();
+    loadData();
   }, []);
 
   return (
     <div className="space-y-8">
-      {/* ===== TOP ROW (HEADER + SCORE) ===== */}
+      {/* ===== TOP ROW ===== */}
       <div className="grid grid-cols-[3fr_1.2fr] gap-6 items-stretch">
-        <ProfileHeader />
-
-        {/* Score aligned to top like Dribbble */}
+        <ProfileHeader user={profile} />
         <ScoreCard className="h-full min-h-55" />
       </div>
 
-      {/* ===== MAIN CONTENT ROW ===== */}
+      {/* ===== MAIN CONTENT ===== */}
       <div className="grid grid-cols-[3fr_1.2fr] gap-6 items-stretch">
         {/* LEFT SIDE */}
         <div className="space-y-6">
@@ -56,6 +81,23 @@ export default function ProfileDashboard() {
             <StatCard
               title="Due Tasks"
               value={dashboardData?.teaching?.stats?.pending || 0}
+            />
+          </div>
+
+          {/* 🔥 FULLY FUNCTIONAL SKILLS */}
+          <div className="grid grid-cols-2 gap-6">
+            <SkillsSection
+              title="Skills I Offer"
+              skills={profile?.skillsHave || []}
+              type="skillsHave"
+              refreshProfile={fetchProfile}
+            />
+
+            <SkillsSection
+              title="Skills I Want"
+              skills={profile?.skillsWant || []}
+              type="skillsWant"
+              refreshProfile={fetchProfile}
             />
           </div>
 

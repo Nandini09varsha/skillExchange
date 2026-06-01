@@ -45,17 +45,8 @@ const userSchema = new mongoose.Schema(
     },
 
     // CORE MATCHING DATA
-    skillsOffered: [
-      {
-        type: String,
-      },
-    ],
-
-    skillsWanted: [
-      {
-        type: String,
-      },
-    ],
+    skillsHave: { type: [String], default: [] },
+    skillsWant: { type: [String], default: [] },
 
     skillLevel: {
       type: String,

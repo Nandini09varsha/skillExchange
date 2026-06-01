@@ -33,6 +33,9 @@ export const updateMyProfile = async (req, res) => {
       preferredMode,
     } = req.body;
 
+    // 🧠 DEBUG LOG (INPUT)
+    console.log("📥 Incoming skills:", { skillsHave, skillsWant });
+
     // 🔐 Validate skills only if provided
     if (skillsHave && (!Array.isArray(skillsHave) || skillsHave.length === 0)) {
       return res
@@ -60,6 +63,12 @@ export const updateMyProfile = async (req, res) => {
 
     const updatedUser = await user.save();
 
+    // 🧠 DEBUG LOG (AFTER SAVE)
+    console.log("✅ Saved user skills:", {
+      skillsHave: updatedUser.skillsHave,
+      skillsWant: updatedUser.skillsWant,
+    });
+
     res.status(200).json({
       message: "Profile updated successfully",
       user: {
@@ -77,22 +86,25 @@ export const updateMyProfile = async (req, res) => {
    Example:
    /api/users/search?skill=python
 ================================= */
-export const searchUsersBySkill = async (req, res) => {
+export const searchUsers = async (req, res) => {
   try {
-    const { skill } = req.query;
+    const { query } = req.query;
 
-    if (!skill) {
-      return res.status(400).json({ message: "Skill is required" });
+    if (!query) {
+      return res.status(400).json({ message: "Search query required" });
     }
 
     const users = await User.find({
-      skillsHave: { $regex: skill, $options: "i" },
-    })
-      .select("-password")
-      .sort({ sessionsTaught: -1 });
+      $or: [
+        { name: { $regex: query, $options: "i" } },
+        { skillsHave: { $regex: query, $options: "i" } },
+        { skillsWant: { $regex: query, $options: "i" } },
+      ],
+    }).select("-password");
 
     res.status(200).json(users);
   } catch (error) {
+    console.error("Search error:", error);
     res.status(500).json({ message: "Search failed" });
   }
 };

@@ -2,7 +2,7 @@ import express from "express";
 import {
   getMyProfile,
   updateMyProfile,
-  searchUsersBySkill,
+  searchUsers,
   getMutualMatches,
   getUserById,
 } from "../controllers/userController.js";
@@ -12,7 +12,8 @@ const router = express.Router();
 
 router.get("/me", protect, getMyProfile);
 router.put("/me", protect, updateMyProfile);
-router.get("/search", searchUsersBySkill);
+
+router.get("/search", searchUsers);
 router.get("/matches", protect, getMutualMatches);
 router.get("/:id", getUserById);
 
